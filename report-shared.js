@@ -1,6 +1,8 @@
 /* Shared fixture data and availability for the three local prototypes. */
 window.ReportPrototype = (() => {
   const prefix = 'youke-assets-disabled:';
+  const deletedPrefix = 'youke-assets-deleted:';
+  const metadataPrefix = 'youke-assets-metadata:';
   const fixtureNames = {
     '图片 · 11月17日 09:42': 'asset-1',
     '视频 · 11月17日 09:31': 'asset-2',
@@ -37,15 +39,43 @@ window.ReportPrototype = (() => {
     } catch { return false; }
   }
 
+  function deletedAt(ref) {
+    if (!ref) return '';
+    try { return localStorage.getItem(deletedPrefix + ref) || ''; }
+    catch { return ''; }
+  }
+
+  function setDeleted(ref) {
+    if (!ref) return false;
+    try { localStorage.setItem(deletedPrefix + ref, new Date().toISOString()); return true; }
+    catch { return false; }
+  }
+
+  function setMetadata(ref, metadata) {
+    if (!ref || !metadata) return false;
+    try { localStorage.setItem(metadataPrefix + ref, JSON.stringify(metadata)); return true; }
+    catch { return false; }
+  }
+
+  function getMetadata(ref) {
+    if (!ref) return null;
+    try { return JSON.parse(localStorage.getItem(metadataPrefix + ref) || 'null'); }
+    catch { return null; }
+  }
+
+  function isUnavailable(ref) { return !!deletedAt(ref) || isDisabled(ref); }
+
   function onAvailabilityChange(handler) {
     window.addEventListener('storage', event => {
       if (event.key?.startsWith(prefix)) handler(event.key.slice(prefix.length));
+      else if (event.key?.startsWith(deletedPrefix)) handler(event.key.slice(deletedPrefix.length));
       else if (event.key === null) handler();
     });
   }
 
   return {
-    isDisabled, setDisabled, onAvailabilityChange, houseExamples, communityExamples,
+    isDisabled, setDisabled, isDeleted: ref => !!deletedAt(ref), deletedAt, setDeleted,
+    isUnavailable, setMetadata, getMetadata, onAvailabilityChange, houseExamples, communityExamples,
     referenceForName: name => Object.hasOwn(fixtureNames, name) ? fixtureNames[name] : undefined
   };
 })();

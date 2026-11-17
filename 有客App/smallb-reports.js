@@ -152,14 +152,39 @@ function sbSendReport(id) {
   const report = SB.reports.find(item => item.id === Number(id));
   if (!report) return;
   SB.sentReport = structuredClone(report);
-  SB.reportSent = true;
+  sbPushChatMessage({kind:'report',report:SB.sentReport});
   closeSheet();
   go('chat');
 }
-const sbChatWithReport=pages.chat;
-pages.chat=()=>{let html=sbChatWithReport();if(SB.sentAssetIds.length){const cards=SB.sentAssetIds.map(id=>{const a=SB.assets.find(x=>x.id===id);return a?'<span class="sb-chat-media">'+sbMediaPreview(a)+(a.type==='视频'?'<em>▶</em>':'')+'</span>':''}).join('');html=html.replace("<div class='chat-content'>","<div class='chat-content'><div class='sb-chat-media-group'>"+cards+"</div>")}return html};
+// Each selected item is a separate message in the existing conversation timeline.
+SB.chatMessages=[];
+let sbMessageSerial=0;
+function sbPushChatMessage(content){
+  SB.chatMessages.push({id:++sbMessageSerial,customer:activeCustomer,time:new Date().toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'}),...content});
+}
+function sbSentMessageMarkup(message){
+  const label=message.kind==='report'?'专属报告':message.asset.type;
+  let content='';
+  if(message.kind==='report'){
+    const owner=window.HousingDemo?.get();
+    const name=owner?.brokers?.[owner.owner]?.name||'经纪人';
+    content='<button class="sb-inline-report" data-sb="mini:'+message.id+'"><span class="sb-mini-title">'+sbEsc(message.report.title)+'</span><span class="sb-mini-cover"><img src="thumb-skyline.jpg" alt=""><em>专属报告</em></span><span class="sb-mini-author">'+sbEsc(name)+'为您整理</span></button>';
+  }else{
+    const asset=message.asset;
+    const thumb=sbEsc(asset.thumb||'');
+    content=asset.type==='视频'?'<video class="sb-sent-media" controls poster="'+(thumb.startsWith('blob:')?'':thumb)+'" src="'+(thumb.startsWith('blob:')?thumb:'../微信淘房小程序/报告视频示例.mp4')+'"></video>':'<img class="sb-sent-media" src="'+thumb+'" alt="已发送图片">';
+  }
+  return '<div class="message-row me" data-sb-sent="'+message.id+'"><span class="real-avatar a2 sm"></span><div class="message-body"><div class="message-meta"><b>我</b><span>'+message.time+'</span></div><div class="sb-sent-content" aria-label="已发送'+label+'">'+content+'</div><div class="delivery-state">已发送</div></div></div>';
+}
+function sbRenderSentMessages(){
+  const body=screenEl.querySelector('.chat-content');
+  if(!body)return;
+  body.insertAdjacentHTML('beforeend',SB.chatMessages.filter(message=>message.customer===activeCustomer).map(sbSentMessageMarkup).join(''));
+  screenEl.scrollTop=screenEl.scrollHeight;
+}
+pages.chat=sbBaseChat;
 const sbNativeGo=go;
-go=function(id,push=true){if((['sbReport','sbSelect'].includes(current)||current==='housingAll'&&SB.housePickerMode)&&id!=='sbSelect'&&id!=='sbReport'&&!(id==='sbLibrary'&&SB.uploadReturn==='editor')&&id!=='sbHelp'&&id!=='sbNotice'&&!(id==='housingAll'&&SB.housePickerMode)&&SB.reportDirty){if(!confirm('报告尚未保存，离开将丢失本次修改。是否离开？'))return;SB.reportDirty=false;SB.newFromChat=false}return sbNativeGo(id,push)};
+go=function(id,push=true){if((['sbReport','sbSelect'].includes(current)||current==='housingAll'&&SB.housePickerMode)&&id!=='sbSelect'&&id!=='sbReport'&&!(id==='sbLibrary'&&SB.uploadReturn==='editor')&&id!=='sbHelp'&&id!=='sbNotice'&&!(id==='housingAll'&&SB.housePickerMode)&&SB.reportDirty){if(!confirm('报告尚未保存，离开将丢失本次修改。是否离开？'))return;SB.reportDirty=false;SB.newFromChat=false}const result=sbNativeGo(id,push);if(id==='chat')sbRenderSentMessages();return result};
 document.addEventListener('input',e=>{if(e.target.id==='sb-title'){SB.title=e.target.value;SB.reportDirty=true}if(e.target.id==='sb-report-query'){const q=e.target.value.trim().toLowerCase();document.querySelectorAll('#sb-report-list .sb-report-tile').forEach(row=>row.hidden=!row.querySelector('.sb-report-tile-top strong').textContent.toLowerCase().includes(q));const list=document.getElementById('sb-report-list');document.getElementById('sb-no-match')?.remove();if(![...list.querySelectorAll('.sb-report-tile')].some(row=>!row.hidden))list.insertAdjacentHTML('beforeend','<div class="sb-emptybox" id="sb-no-match">没有匹配的报告</div>')}if(e.target.id==='sb-pick-query'||e.target.id==='sb-community-query'){SB.pickQuery=e.target.value.trim();const q=SB.pickQuery.toLowerCase();document.querySelectorAll('.sb-picker-results .sb-property-choice').forEach(row=>row.hidden=!row.textContent.toLowerCase().includes(q))}});
 document.addEventListener('change',e=>{if(e.target.id==='sb-notice-check')SB.disclaimerChecked=e.target.checked;if(e.target.id==='sb-file'&&SB.uploadReturn==='editor'){SB.uploadReturn='';setTimeout(()=>go('sbSelect'),0)}});
 document.addEventListener('click',e=>{const old=e.target.closest('[data-sb]');if(old&&['remove','descSave','up','down'].includes(old.dataset.sb.split(':')[0]))SB.reportDirty=true;const el=e.target.closest('[data-rpt]');if(!el)return;const [action,...bits]=el.dataset.rpt.split(':');const value=bits.join(':');if(action==='help'){SB.infoReturn=current;closeSheet();go('sbHelp')}
@@ -180,8 +205,8 @@ if (action === 'sendAssets') {
     return;
   }
   if (!available.length) return;
-  SB.sentAssetIds = available.map(asset => asset.id);
-  SB.chatStatus = '';
+  for(const asset of available)sbPushChatMessage({kind:'asset',asset});
+  SB.sentAssetIds=[];SB.chatStatus='';
   closeSheet();go('chat');
 }
 if(action==='sendReport')sbSendReport(value);

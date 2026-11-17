@@ -1,0 +1,584 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>专属报告</title>
+<style>
+:root {
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+  color: #152032;
+  background: #e5eaf5;
+  font-synthesis: none;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { margin: 0; }
+button { font: inherit; }
+button:focus-visible { outline: 3px solid #3782ff; outline-offset: 3px; }
+.report { max-width: 480px; min-height: 100vh; margin: auto; background: #f3f5f9; }
+.hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  padding: 0 max(22px, env(safe-area-inset-right)) 54px max(22px, env(safe-area-inset-left));
+  color: #fff;
+  background: linear-gradient(121deg, #101f78 0%, #143cb8 58%, #2377e8 100%);
+}
+.hero::before, .hero::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  pointer-events: none;
+}
+.hero::before {
+  inset: 0 0 0 29%;
+  background: linear-gradient(114deg, #1443bd 8%, #1150c254 62%, #092d8de0),
+    url("../有客App/thumb-skyline.jpg") center 64% / cover;
+  mask-image: linear-gradient(102deg, transparent 3%, #000 67%);
+  opacity: .54;
+}
+.hero::after {
+  width: 255px;
+  height: 240px;
+  top: -116px;
+  right: -40px;
+  border: 1px solid #fff4;
+  border-radius: 52px;
+  transform: rotate(39deg);
+  box-shadow: 0 0 0 24px #9ed0ff12, 0 0 0 57px #9ed0ff0d, 0 0 0 91px #9ed0ff09;
+}
+.hero-top { min-height: 69px; padding-top: max(18px, env(safe-area-inset-top)); }
+.return-button {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  margin-left: -12px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #fff;
+  cursor: pointer;
+}
+.return-button[hidden] { display: none; }
+.return-button::before {
+  content: "";
+  width: 10px;
+  height: 10px;
+  border-left: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: rotate(45deg);
+}
+.hero h1 {
+  margin: 0;
+  max-width: 100%;
+  font-size: clamp(31px, 9.4vw, 44px);
+  font-weight: 800;
+  letter-spacing: -.035em;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+.author { margin: 12px 0 0; color: #e0eaff; font-size: 14px; line-height: 1.5; overflow-wrap: anywhere; }
+.content {
+  position: relative;
+  margin-top: -20px;
+  border-radius: 22px 22px 0 0;
+  background: #f3f5f9;
+  padding: 27px 15px calc(33px + env(safe-area-inset-bottom));
+}
+.floor + .floor { margin-top: 28px; }
+.floor-title {
+  width: fit-content;
+  position: relative;
+  isolation: isolate;
+  margin: 0 0 13px 3px;
+  font-size: 22px;
+  line-height: 1.4;
+  font-weight: 780;
+  letter-spacing: -.035em;
+}
+.floor-title::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  bottom: 1px;
+  left: 0;
+  width: 43px;
+  height: 7px;
+  border-radius: 4px;
+  background: #b4d2ff;
+}
+.floor-desc {
+  margin: 0 0 12px;
+  padding: 10px 12px;
+  border-radius: 9px;
+  color: #314a72;
+  background: #e9effb;
+  font-size: 14px;
+  line-height: 1.55;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.recommendations { display: grid; gap: 9px; }
+.more-recommendations { display: grid; gap: 9px; margin-top: 9px; }
+.more-recommendations[hidden] { display: none; }
+.more-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  width: 100%;
+  min-height: 44px;
+  margin-top: 10px;
+  border: 1px solid #d5e2fa;
+  border-radius: 9px;
+  background: #eaf1ff;
+  color: #174ba3;
+  font-size: 14px;
+  font-weight: 680;
+  cursor: pointer;
+}
+.more-button:active { background: #dce9ff; }
+.more-button::after {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: translateY(-2px) rotate(45deg);
+}
+.more-button[aria-expanded="true"]::after { transform: translateY(2px) rotate(225deg); }
+@media (prefers-reduced-motion: no-preference) {
+  .more-recommendations:not([hidden]) { animation: reveal .2s ease-out; }
+  @keyframes reveal { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
+}
+.recommendation {
+  display: grid;
+  grid-template-columns: clamp(74px, 25vw, 110px) minmax(0, 1fr);
+  gap: 11px;
+  padding: 9px;
+  align-items: start;
+  background: #fff;
+  border-radius: 12px;
+}
+.cover { position: relative; overflow: hidden; background: #dde6f4; }
+.recommendation .cover { aspect-ratio: 1.08; border-radius: 7px; }
+.cover img, .cover video { display: block; width: 100%; height: 100%; object-fit: cover; }
+.card-copy { min-width: 0; padding: 2px 0; text-align: left; }
+.card-title { margin: 0; font-size: 16px; line-height: 1.38; font-weight: 750; overflow-wrap: anywhere; }
+.card-meta, .card-place { margin: 4px 0 0; color: #536174; font-size: 13px; line-height: 1.45; overflow-wrap: anywhere; }
+.card-price {
+  margin: 6px 0 0;
+  color: #b72f35;
+  font-size: 22px;
+  line-height: 1.05;
+  font-weight: 790;
+  font-variant-numeric: tabular-nums;
+}
+.card-price span { margin-left: 2px; font-size: 12px; font-weight: 700; }
+.price-row { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 9px; margin-top: 7px; }
+.price-row .card-price { margin: 0; }
+.unit-price { font-size: 12px; color: #536174; }
+.property-tags { display: flex; flex-wrap: wrap; gap: 4px; margin: 6px 0 0; }
+.property-tag { border-radius: 3px; padding: 2px 5px; font-size: 11px; line-height: 1.4; color: #536174; background: #f2f4f7; }
+.community .cover { aspect-ratio: 1.06; }
+.community .card-title { font-size: 17px; }
+.market-price { display: flex; flex-wrap: wrap; align-items: baseline; gap: 3px 7px; margin: 6px 0 0; font-size: 12px; color: #536174; }
+.market-price strong { color: #b72f35; font-size: 15px; font-variant-numeric: tabular-nums; }
+.market-month { flex-basis: 100%; font-size: 11px; color: #536174; }
+.media-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; }
+.media-card {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: 10px;
+  overflow: hidden;
+  cursor: pointer;
+}
+.media-card .cover { aspect-ratio: 1.47; }
+.media-card:only-child { grid-column: 1 / -1; }
+.media-card:only-child .cover { aspect-ratio: 1.95; }
+.play {
+  position: absolute;
+  inset: 50% auto auto 50%;
+  transform: translate(-50%, -50%);
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border: 1px solid #fff8;
+  border-radius: 50%;
+  background: #0d193eaa;
+}
+.play::after {
+  content: "";
+  margin-left: 2px;
+  border-block: 6px solid transparent;
+  border-left: 10px solid white;
+}
+.viewer {
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  padding: 56px 18px 20px;
+  border: 0;
+  background: #0b1222f5;
+  color: #fff;
+}
+.viewer[open] { display: grid; place-items: center; }
+.viewer-content { text-align: center; }
+.viewer-content img, .viewer-content video { display: block; max-width: 100%; max-height: 79vh; border-radius: 8px; }
+.viewer-close {
+  position: absolute;
+  top: max(16px, env(safe-area-inset-top));
+  right: 16px;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 50%;
+  background: #fff3;
+  color: #fff;
+  font-size: 26px;
+  cursor: pointer;
+}
+.page-error { margin: 14px 0; color: #536174; text-align: center; }
+</style>
+</head>
+<body>
+<div class="report">
+  <header class="hero">
+    <div class="hero-top"><button class="return-button" type="button" aria-label="返回" hidden></button></div>
+    <h1 id="report-title"></h1>
+    <p class="author" hidden></p>
+  </header>
+  <main id="report-content" class="content"></main>
+</div>
+<dialog id="viewer" class="viewer" aria-label="查看素材">
+  <button class="viewer-close" type="button" aria-label="关闭">×</button>
+  <div class="viewer-content"></div>
+</dialog>
+<script src="../report-shared.js"></script>
+<script>
+const params = new URLSearchParams(location.search);
+const floors = {
+  房源: { id: 'houses', title: '房源推荐' },
+  小区: { id: 'communities', title: '小区推荐' },
+  图片: { id: 'images', title: '实景照片' },
+  视频: { id: 'videos', title: '实拍视频' }
+};
+const demo = {
+  房源: [
+    { ...ReportPrototype.houseExamples['101140402577'], title: '御锦城三房 · 南北通透', cover: 'thumb-living.jpg', room: 3, area: 94.06, price: 108, community: '御锦城', district: '浐灞国际港', block: '浐河西路' },
+    { ...ReportPrototype.houseExamples.S4624826410476559, title: '保利心语花园 · 南北通透', cover: 'thumb-skyline.jpg', room: 3, area: 112, price: 156, community: '保利心语花园', district: '雁塔区', block: '曲江' },
+    { ...ReportPrototype.houseExamples['101139343423'], title: '金地湖城大境 · 四室', cover: 'thumb-video.jpg', room: 4, area: 136, price: 218, community: '金地湖城大境', district: '雁塔区', block: '曲江' },
+    { ...ReportPrototype.houseExamples.S8624826410476521, title: '龙湖香醍国际 · 三室', cover: 'thumb-community.jpg', room: 3, area: 128, price: 188, community: '龙湖香醍国际', district: '灞桥区', block: '浐灞' }
+  ],
+  小区: [
+    { title: '御锦城', cover: 'thumb-community.jpg', district: '浐灞国际港', block: '浐河西路' },
+    { title: '天朗大兴郡', cover: 'thumb-skyline.jpg', district: '莲湖区', block: '大兴新城' },
+    { title: '保利心语花园', cover: 'thumb-video.jpg', district: '雁塔区', block: '曲江' },
+    { title: '龙湖香醍国际', cover: 'thumb-community.jpg', district: '灞桥区', block: '浐灞' }
+  ].map(item => ({ ...ReportPrototype.communityExamples[item.title], ...item })),
+  图片: [
+    { title: '室内实景', cover: 'thumb-living.jpg', assetRef: 'asset-1' },
+    { title: '小区环境', cover: 'thumb-community.jpg', assetRef: 'asset-5' },
+    { title: '周边街景', cover: 'thumb-skyline.jpg', assetRef: 'asset-photo-3' },
+    { title: '公共空间', cover: 'thumb-video.jpg', assetRef: 'asset-photo-4' }
+  ],
+  视频: [
+    { title: '看房实拍', cover: 'thumb-video.jpg', assetRef: 'asset-2' },
+    { title: '小区实拍', cover: 'thumb-community.jpg', assetRef: 'asset-video-2' }
+  ]
+};
+const demoDescriptions = {
+  房源: '按您关注的户型，整理了几套不同面积和总价的备选。',
+  小区: '如果您也在比较居住位置，可以先看看这几个小区所在的板块。'
+};
+const fromReport = ['items', 'covers', 'details', 'descs'].some(key => params.has(key));
+const reportOrder = params.has('components')
+  ? [...new Set(params.get('components').split(',').filter(kind => Object.hasOwn(floors, kind)))]
+  : Object.keys(floors);
+
+function readObject(key) {
+  try { return JSON.parse(params.get(key)) || {}; }
+  catch { return {}; }
+}
+
+const titles = readObject('items');
+const covers = readObject('covers');
+const details = readObject('details');
+const descriptions = fromReport ? readObject('descs') : demoDescriptions;
+const main = document.getElementById('report-content');
+
+function node(tag, className, text) {
+  const element = document.createElement(tag);
+  if (className) element.className = className;
+  if (text) element.textContent = text;
+  return element;
+}
+
+function fileUrl(value) {
+  if (typeof value !== 'string' || !value.trim()) return '';
+  if (/^(blob:|https?:|data:)/.test(value)) return value;
+  return '../有客App/' + value;
+}
+
+function buildCover(item, kind) {
+  const cover = node('div', 'cover');
+  const url = fileUrl(item.cover);
+  if (url) {
+    const isLocalVideo = kind === '视频' && url.startsWith('blob:');
+    const thumbnail = node(isLocalVideo ? 'video' : 'img');
+    thumbnail.src = url;
+    if (isLocalVideo) {
+      thumbnail.muted = true;
+      thumbnail.preload = 'metadata';
+      thumbnail.playsInline = true;
+      thumbnail.setAttribute('aria-hidden', 'true');
+    } else {
+      thumbnail.alt = '';
+      thumbnail.addEventListener('error', () => thumbnail.remove(), { once: true });
+    }
+    cover.append(thumbnail);
+  }
+  return cover;
+}
+
+function addLine(parent, className, values) {
+  const line = values.filter(Boolean).join(' · ');
+  if (line) parent.append(node('p', className, line));
+}
+
+const priceFormatter = new Intl.NumberFormat('zh-CN', { maximumFractionDigits: 0 });
+
+function addPropertyPrices(copy, item) {
+  const prices = node('div', 'price-row');
+  if (Number(item.price) > 0) {
+    const total = node('p', 'card-price', String(item.price));
+    total.append(node('span', '', '万'));
+    prices.append(total);
+  }
+  const unitPrice = Number(item.unitPrice) > 0 ? Number(item.unitPrice)
+    : Number(item.price) > 0 && Number(item.area) > 0 ? Number(item.price) * 10000 / Number(item.area) : 0;
+  if (unitPrice > 0) prices.append(node('span', 'unit-price', priceFormatter.format(unitPrice) + ' 元/㎡'));
+  if (prices.childElementCount) copy.append(prices);
+}
+
+function addMarketPrice(copy, item) {
+  const month = /^(\d{4})-(0[1-9]|1[0-2])$/.exec(item.listingMonth || '');
+  if (!month || !(Number(item.listingAverage) > 0)) return;
+  const market = node('p', 'market-price');
+  market.append(
+    node('span', '', '挂牌均价'),
+    node('strong', '', priceFormatter.format(Number(item.listingAverage)) + '元/㎡'),
+    node('span', 'market-month', '（' + month[1].slice(-2) + '年' + month[2] + '月数据）')
+  );
+  copy.append(market);
+}
+
+function addPropertyTags(copy, item) {
+  const tags = node('div', 'property-tags');
+  const unique = new Set();
+  const features = Array.isArray(item.features) ? item.features : String(item.features || '').split(/[,，、]/);
+  for (const value of features) {
+    const label = typeof value === 'string' ? value.trim() : '';
+    if (!label || unique.has(label)) continue;
+    unique.add(label);
+    tags.append(node('span', 'property-tag', label));
+    if (unique.size === 3) break;
+  }
+  if (tags.childElementCount) copy.append(tags);
+}
+
+function recommendation(kind, item) {
+  const isHouse = kind === '房源';
+  const card = node('article', isHouse ? 'recommendation' : 'recommendation community');
+  const copy = node('div', 'card-copy');
+  const legacyKey = isHouse && item.title.includes('|');
+  const title = legacyKey ? (item.community || '房源信息') : item.title;
+  copy.append(node('h3', 'card-title', title));
+
+  if (isHouse) {
+    addLine(copy, 'card-meta', [item.room ? item.room + '室' : '', item.area ? item.area + '㎡' : '']);
+    addLine(copy, 'card-place', [item.district, item.block, item.community]);
+    addPropertyTags(copy, item);
+    addPropertyPrices(copy, item);
+  } else {
+    addLine(copy, 'card-meta', [item.district, item.block, item.buildingPeriod]);
+    addMarketPrice(copy, item);
+  }
+  card.append(buildCover(item, kind), copy);
+  return card;
+}
+
+function addRecommendations(floor, kind, items) {
+  const visibleCount = 3;
+  const initial = node('div', 'recommendations');
+  initial.append(...items.slice(0, visibleCount).map(item => recommendation(kind, item)));
+  floor.append(initial);
+  if (items.length <= visibleCount) return;
+
+  const extra = node('div', 'more-recommendations');
+  extra.id = floor.id + '-more';
+  extra.hidden = true;
+  extra.append(...items.slice(visibleCount).map(item => recommendation(kind, item)));
+  const toggle = node('button', 'more-button', '查看更多');
+  toggle.type = 'button';
+  toggle.setAttribute('aria-controls', extra.id);
+  toggle.setAttribute('aria-expanded', 'false');
+  toggle.addEventListener('click', () => {
+    const expand = extra.hidden;
+    extra.hidden = !expand;
+    toggle.textContent = expand ? '收起' : '查看更多';
+    toggle.setAttribute('aria-expanded', String(expand));
+    if (!expand) toggle.scrollIntoView({ block: 'nearest' });
+  });
+  floor.append(extra, toggle);
+}
+
+const viewer = document.getElementById('viewer');
+const viewerContent = viewer.querySelector('.viewer-content');
+let openedAssetRef;
+viewer.querySelector('.viewer-close').addEventListener('click', () => viewer.close());
+viewer.addEventListener('click', event => { if (event.target === viewer) viewer.close(); });
+viewer.addEventListener('close', () => {
+  openedAssetRef = undefined;
+  viewerContent.replaceChildren();
+});
+
+function openMedia(kind, item) {
+  if (ReportPrototype.isDisabled(item.assetRef)) return;
+  openedAssetRef = item.assetRef;
+  const url = fileUrl(item.cover);
+  const isVideo = kind === '视频';
+  const content = node(isVideo ? 'video' : 'img');
+  function showError() {
+    viewerContent.textContent = isVideo ? '视频暂时无法播放，请稍后再试' : '照片暂时无法查看，请稍后再试';
+  }
+  content.addEventListener('error', showError, { once: true });
+  viewer.showModal();
+  if (isVideo) {
+    content.controls = true;
+    content.autoplay = true;
+    content.playsInline = true;
+    if (url && !url.startsWith('blob:')) content.poster = url;
+    content.src = item.video || (url.startsWith('blob:') ? url : '报告视频示例.mp4');
+  } else {
+    if (!url) { showError(); return; }
+    content.alt = item.title || '实景照片';
+    content.src = url;
+  }
+  viewerContent.replaceChildren(content);
+}
+
+function mediaTile(kind, item) {
+  const isVideo = kind === '视频';
+  const button = node('button', 'media-card');
+  button.type = 'button';
+  button.setAttribute('aria-label', isVideo ? '播放视频' : '查看照片');
+  const cover = buildCover(item, kind);
+  if (isVideo) cover.append(node('span', 'play'));
+  button.append(cover);
+  button.addEventListener('click', () => openMedia(kind, item));
+  return button;
+}
+
+function addMediaFloor(floor, kind, items) {
+  const initialCount = kind === '图片' ? 2 : 1;
+  const initial = node('div', 'media-grid');
+  initial.append(...items.slice(0, initialCount).map(item => mediaTile(kind, item)));
+  floor.append(initial);
+  if (items.length <= initialCount) return;
+  const extra = node('div', 'media-grid more-recommendations');
+  extra.id = floor.id + '-more';
+  extra.hidden = true;
+  extra.append(...items.slice(initialCount).map(item => mediaTile(kind, item)));
+  const label = kind === '图片' ? '照片' : '视频';
+  const toggle = node('button', 'more-button', '查看全部' + label + '（' + items.length + '）');
+  toggle.type = 'button';
+  toggle.setAttribute('aria-controls', extra.id);
+  toggle.setAttribute('aria-expanded', 'false');
+  toggle.addEventListener('click', () => {
+    const expand = extra.hidden;
+    extra.hidden = !expand;
+    toggle.textContent = expand ? '收起' + label : '查看全部' + label + '（' + items.length + '）';
+    toggle.setAttribute('aria-expanded', String(expand));
+    if (!expand) initial.scrollIntoView({ block: 'nearest' });
+  });
+  floor.append(extra, toggle);
+}
+
+function renderFloor(kind) {
+  const media = kind === '图片' || kind === '视频';
+  const items = fromReport
+    ? (Array.isArray(titles[kind]) ? titles[kind] : []).map((title, index) => ({
+        ...(details[kind]?.[index] || {}),
+        title: String(title),
+        cover: covers[kind]?.[index],
+        assetRef: media ? details[kind]?.[index]?.assetRef || ReportPrototype.referenceForName(String(title)) : undefined
+      }))
+    : demo[kind];
+  const visibleItems = media ? items.filter(item => !ReportPrototype.isDisabled(item.assetRef)) : items;
+  const description = typeof descriptions[kind] === 'string' ? descriptions[kind].trim() : '';
+  const existing = document.getElementById(floors[kind].id);
+  if (!visibleItems.length && !description) {
+    existing?.remove();
+    return;
+  }
+
+  const floor = node('section', 'floor');
+  floor.id = floors[kind].id;
+  floor.append(node('h2', 'floor-title', floors[kind].title));
+  if (description) floor.append(node('p', 'floor-desc', description));
+  if (visibleItems.length) {
+    if (!media) {
+      addRecommendations(floor, kind, visibleItems);
+    } else {
+      addMediaFloor(floor, kind, visibleItems);
+    }
+  }
+  if (existing) existing.replaceWith(floor);
+  else {
+    const after = reportOrder.slice(reportOrder.indexOf(kind) + 1)
+      .map(type => document.getElementById(floors[type].id)).find(Boolean);
+    main.insertBefore(floor, after || null);
+  }
+}
+
+function renderEmptyState() {
+  main.querySelector('.page-error')?.remove();
+  if (!main.childElementCount) main.append(node('p', 'page-error', '这份报告暂时没有可查看的内容'));
+}
+for (const kind of reportOrder) renderFloor(kind);
+renderEmptyState();
+ReportPrototype.onAvailabilityChange(() => {
+  if (viewer.open && ReportPrototype.isDisabled(openedAssetRef)) {
+    viewerContent.replaceChildren();
+    viewer.close();
+  }
+  for (const kind of reportOrder) {
+    if (kind === '图片' || kind === '视频') renderFloor(kind);
+  }
+  renderEmptyState();
+});
+
+const reportTitle = params.get('title')?.trim() || (fromReport ? '专属报告' : '西安三房看房参考');
+document.getElementById('report-title').textContent = reportTitle;
+document.title = reportTitle;
+const author = params.get('agent')?.trim() || (fromReport ? '' : '张顾问');
+if (author) {
+  const byline = document.querySelector('.author');
+  byline.textContent = author + '为您整理';
+  byline.hidden = false;
+}
+const returnButton = document.querySelector('.return-button');
+if (window.opener || (document.referrer && history.length > 1)) {
+  returnButton.hidden = false;
+  returnButton.addEventListener('click', () => { if (window.opener) window.close(); else history.back(); });
+}
+</script>
+</body>
+</html>

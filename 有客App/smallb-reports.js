@@ -152,7 +152,6 @@ function sbReportPreviewUrl(report) {
   }
   const params = new URLSearchParams({
     title: report.title,
-    agent: housingState.brokers[housing.owner]?.name || '',
     components: visible.join(','),
     descs: JSON.stringify(report.desc),
     items: JSON.stringify(items),
@@ -176,7 +175,7 @@ return sbPage('选择'+type,html+'<div class="sb-fixed-action"><button data-rpt=
 const sbMyWithOldEntry=pages.me;
 pages.me=()=>sbMyWithOldEntry().replace(/<button class='sb-me-entry'[\s\S]*?<\/button>/,'').replace('</section>','</section><div class="my-group-title"><h4>资料库</h4></div><div class="my-menu">'+menuRow('file','资料库','照片、视频与报告都在这里','sbLibrary','','orange')+'</div>');
 const sbNativeChatComposer=chatComposer;
-chatComposer=function(expired=false){const composer=sbNativeChatComposer(expired);if(expired)return composer;return '<div class="sb-chat-composer"><div class="sb-chat-shortcuts"><button data-go="homePicker">'+icon('home',15)+'<span>房源</span></button><button data-rpt="chatPicker">'+icon('file',15)+'<span>发资料</span></button></div>'+composer+'<div class="sb-more-panel" hidden><div class="sb-more-grid"><button data-permission="camera">'+icon('camera',22)+'<span>拍摄</span></button><button data-sb="send:图片">'+icon('image',22)+'<span>图片</span></button><button data-sb="send:视频">'+sbSmallIcon('视频')+'<span>视频</span></button><button data-go="projectPicker">'+icon('building',22)+'<span>楼盘</span></button><button data-go="map">'+icon('pin',22)+'<span>位置</span></button></div><button class="sb-more-cancel" data-close-sheet>取消</button></div></div>'};
+chatComposer=function(expired=false){const composer=sbNativeChatComposer(expired);if(expired)return composer;return '<div class="sb-chat-composer"><div class="sb-chat-shortcuts"><button data-go="homePicker">'+icon('home',15)+'<span>房源</span></button><button data-rpt="chatPicker">'+icon('file',15)+'<span>发资料</span></button></div>'+composer+'<div class="sb-more-panel" hidden><div class="sb-more-grid"><button data-permission="camera">'+icon('camera',22)+'<span>拍摄</span></button><button data-sb="send:media">'+icon('image',22)+'<span>相册</span></button><button data-go="projectPicker">'+icon('building',22)+'<span>楼盘</span></button><button data-go="map">'+icon('pin',22)+'<span>位置</span></button></div><button class="sb-more-cancel" data-close-sheet>取消</button></div></div>'};
 function sbCloseMore(){const composer=document.querySelector('.sb-chat-composer');if(composer){composer.classList.remove('more-open');const panel=composer.querySelector('.sb-more-panel');if(panel)panel.hidden=true}}
 const sbNativeCloseSheet=closeSheet;
 closeSheet=function(){sbCloseMore();return sbNativeCloseSheet()};
@@ -202,9 +201,7 @@ function sbSentMessageMarkup(message){
   const label=message.kind==='report'?'专属报告':message.asset.type;
   let content='';
   if(message.kind==='report'){
-    const owner=window.HousingDemo?.get();
-    const name=owner?.brokers?.[owner.owner]?.name||'经纪人';
-    content='<button class="sb-inline-report" data-sb="mini:'+message.id+'"><span class="sb-mini-title">'+sbEsc(message.report.title)+'</span><span class="sb-mini-cover"><img src="thumb-skyline.jpg" alt=""><em>专属报告</em></span><span class="sb-mini-author">'+sbEsc(name)+'为您整理</span></button>';
+    content='<button class="sb-inline-report" data-sb="mini:'+message.id+'"><span class="sb-mini-title">'+sbEsc(message.report.title)+'</span><span class="sb-mini-cover"><img src="thumb-skyline.jpg" alt="资料封面"></span></button>';
   }else{
     const asset=message.asset;
     const thumb=sbEsc(asset.thumb||'');

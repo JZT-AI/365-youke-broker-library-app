@@ -6,6 +6,7 @@ function sbAutoName(type) { const d = new Date(); return type + ' · ' + [d.getF
 SB.assets.forEach((a,i) => { a.name = a.type + ' · ' + ['11月17日 09:42','11月17日 09:31','11月17日 08:02','11月16日 17:20'][i] });
 SB.assets.push({id:5,name:'图片 · 11月16日 16:06',type:'图片',source:'素材库上传',time:'11-16 16:06',thumb:'thumb-community.jpg'},{id:6,name:'视频 · 11月15日 14:25',type:'视频',source:'素材库上传',time:'11-15 14:25',thumb:'thumb-skyline.jpg'});
 const sbDemoHouses=window.HousingDemo.get().houses;
+const sbCurrentAdvisorName='林悦';
 const sbDemoVideo = SB.assets.find(asset => asset.type === '视频');
 const sbDemoVideos = SB.assets.filter(asset => asset.type === '视频');
 SB.communityOptions=window.HousingDemo.get().masterCommunities.map(c=>({name:c.name,district:c.district,block:c.block,aliases:c.aliases}));
@@ -14,6 +15,7 @@ SB.moduleTitles = {...sbModuleTitleDefaults};
 const sbSeed = [{
   id: 1,
   title: '西安三房看房参考',
+  advisorName: sbCurrentAdvisorName,
   comps: ['房源', '图片', '视频'],
   selected: {
     房源: [sbDemoHouses[0].key, sbDemoHouses[1].key],
@@ -30,6 +32,7 @@ const sbSeed = [{
 },{
   id: 2,
   title: '周末看房实景照片',
+  advisorName: sbCurrentAdvisorName,
   comps: ['房源', '图片', '视频'],
   selected: {房源: [], 图片: [SB.assets[0].name, SB.assets[4].name], 视频: []},
   desc: {房源: '', 图片: '整理了看房当天拍摄的室内与周边照片。', 视频: ''},
@@ -38,6 +41,7 @@ const sbSeed = [{
 },{
   id: 3,
   title: '周末现场讲解视频',
+  advisorName: sbCurrentAdvisorName,
   comps: ['房源', '图片', '视频'],
   selected: {房源: [], 图片: [], 视频: sbDemoVideos.map(asset => asset.name)},
   desc: {房源: '', 图片: '', 视频: '两段现场实拍，方便您先了解空间与周边。'},
@@ -56,9 +60,9 @@ SB.editId = null; SB.pickSelected = new Set(); SB.reportDirty = false;
 SB.disclaimerChecked = true; SB.helpHtml = '<p>常用的房源照片、讲解视频，可以先放进「我的素材」。上传后，组报告时随时能用。</p><p>在「我的报告」整理好客户关心的内容；和客户聊天时，从「发送资料」挑素材或报告发给他。</p>';
 SB.noticeHtml = '<p>请确认上传内容真实、合法且具有使用权。请勿上传侵权或违法内容。</p>';
 try { SB.helpHtml=localStorage.getItem('smallb-config-help')||SB.helpHtml; SB.noticeHtml=localStorage.getItem('smallb-config-notice')||SB.noticeHtml } catch {}
-function sbSnapshot(id) { const types=['房源','图片','视频'];return {id,title:SB.title.trim(),comps:SB.comps.filter(type=>types.includes(type)),selected:Object.fromEntries(types.map(type=>[type,[...(SB.selected[type]||[])]])),desc:Object.fromEntries(types.map(type=>[type,SB.desc[type]||''])),moduleTitles:Object.fromEntries(types.map(type=>[type,SB.moduleTitles[type]||sbModuleTitleDefaults[type]])),updatedAt:sbTime()} }
-function sbLoadReport(report) { const types=['房源','图片','视频'];SB.editId=report.id; SB.title=report.title; SB.comps=report.comps.filter(type=>types.includes(type)); SB.selected=Object.fromEntries(types.map(type=>[type,[...(report.selected[type]||[])]])); SB.desc=Object.fromEntries(types.map(type=>[type,report.desc[type]||''])); SB.moduleTitles=Object.fromEntries(types.map(type=>[type,report.moduleTitles?.[type]||sbModuleTitleDefaults[type]])); SB.reportDirty=false; SB.disclaimerChecked=true }
-function sbNewReport() { SB.editId=null; SB.title=''; SB.comps=['房源','图片','视频']; SB.selected={房源:[],图片:[],视频:[]}; SB.desc={房源:'',图片:'',视频:''}; SB.moduleTitles={...sbModuleTitleDefaults}; SB.reportDirty=false; SB.disclaimerChecked=true; go('sbReport') }
+function sbSnapshot(id) { const types=['房源','图片','视频'];return {id,title:SB.title.trim(),advisorName:SB.advisorName||sbCurrentAdvisorName,comps:SB.comps.filter(type=>types.includes(type)),selected:Object.fromEntries(types.map(type=>[type,[...(SB.selected[type]||[])]])),desc:Object.fromEntries(types.map(type=>[type,SB.desc[type]||''])),moduleTitles:Object.fromEntries(types.map(type=>[type,SB.moduleTitles[type]||sbModuleTitleDefaults[type]])),updatedAt:sbTime()} }
+function sbLoadReport(report) { const types=['房源','图片','视频'];SB.editId=report.id; SB.title=report.title; SB.advisorName=report.advisorName||sbCurrentAdvisorName; SB.comps=report.comps.filter(type=>types.includes(type)); SB.selected=Object.fromEntries(types.map(type=>[type,[...(report.selected[type]||[])]])); SB.desc=Object.fromEntries(types.map(type=>[type,report.desc[type]||''])); SB.moduleTitles=Object.fromEntries(types.map(type=>[type,report.moduleTitles?.[type]||sbModuleTitleDefaults[type]])); SB.reportDirty=false; SB.disclaimerChecked=true }
+function sbNewReport() { SB.editId=null; SB.title=''; SB.advisorName=sbCurrentAdvisorName; SB.comps=['房源','图片','视频']; SB.selected={房源:[],图片:[],视频:[]}; SB.desc={房源:'',图片:'',视频:''}; SB.moduleTitles={...sbModuleTitleDefaults}; SB.reportDirty=false; SB.disclaimerChecked=true; go('sbReport') }
 function sbSaveReport() { const id=SB.editId ?? Date.now(); const item=sbSnapshot(id); const ix=SB.reports.findIndex(r=>r.id===id); if(ix<0) SB.reports.unshift(item); else SB.reports[ix]=item; SB.editId=id; SB.reportDirty=false; sbWrite('smallb-reports-demo',SB.reports) }
 const sbBasePage = sbPage;
 sbPage = function(title,body) { return screen('<div class="sb-body">'+body+'</div>', title, {right:['功能说明','素材免责须知','选择素材','选择报告'].includes(title)?'':'<button class="sb-header-help" data-rpt="help" aria-label="功能说明">'+sbHelpIcon+'<span>说明</span></button>'}) };
@@ -171,6 +175,7 @@ function sbReportPreviewUrl(report) {
   }
   const params = new URLSearchParams({
     title: report.title,
+    advisorName: report.advisorName||sbCurrentAdvisorName,
     components: visible.join(','),
     moduleTitles: JSON.stringify({...sbModuleTitleDefaults,...report.moduleTitles}),
     descs: JSON.stringify(report.desc),

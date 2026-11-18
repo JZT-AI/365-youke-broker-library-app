@@ -69,6 +69,7 @@ window.ReportPrototype = (() => {
     window.addEventListener('storage', event => {
       if (event.key?.startsWith(prefix)) handler(event.key.slice(prefix.length));
       else if (event.key?.startsWith(deletedPrefix)) handler(event.key.slice(deletedPrefix.length));
+      else if (event.key === 'demo-disabled-reports') handler();
       else if (event.key === null) handler();
     });
   }

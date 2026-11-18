@@ -32,3 +32,31 @@
 .sb-mini-cover{height:138px}.sb-mini-cover.has-houses{display:flex!important;flex-direction:column}.sb-mini-cover.has-houses img{display:block;height:82px;flex:none}.sb-mini-facts{display:flex!important;flex-direction:column;justify-content:center;gap:2px;min-height:56px;padding:5px 10px;background:#fff;text-align:left}.sb-mini-facts span{display:block;color:#31465a;font-size:10px;line-height:1.3}.sb-mini-facts strong{display:block;color:#b74b2b;font-size:14px;line-height:1.2}
 .message-row.me .sb-sent-content .sb-mini-cover{height:108px}.message-row.me .sb-sent-content .sb-mini-cover.has-houses{height:130px}.message-row.me .sb-sent-content .sb-mini-cover.has-houses img{height:79px}.message-row.me .sb-sent-content .sb-mini-facts{height:51px;min-height:0;padding:4px 9px}
 .sb-mini-cover-image{position:relative;display:block;width:100%;height:100%;overflow:hidden}.sb-mini-cover-image img{display:block;width:100%;height:100%;object-fit:cover}.sb-mini-cover.has-houses .sb-mini-cover-image{height:79px;flex:none}.sb-mini-media-count{position:absolute;right:8px;bottom:7px;display:inline-block!important;max-width:calc(100% - 16px);padding:4px 8px;border-radius:5px;background:rgba(12,57,51,.82);color:#fff!important;font-size:10px!important;font-weight:650;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;backdrop-filter:blur(4px)}
+/* Report summaries, balanced actions, and one-tap selection. */
+.sb-report-actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));padding:0;margin:0 -15px;gap:0}
+.sb-report-actions button{width:100%;min-width:0;min-height:47px;padding:0 4px;border-radius:0;white-space:nowrap}
+.sb-report-actions button+button{border-left:1px solid #eef1f4}
+.sb-report-actions button.delete{color:#7d8997}
+.sb-report-tile p{line-height:1.45;min-height:16px}
+.sb-report-tile.send{padding:0;overflow:hidden}
+.sb-report-card-select{display:block;width:100%;padding:15px;text-align:left;border:0;background:transparent;color:inherit;cursor:pointer}
+.sb-report-card-select:focus-visible{outline:2px solid #f36d31;outline-offset:-3px}
+.sb-report-card-select p{margin-bottom:0}
+.sb-report-choice-mark{display:grid;place-items:center;width:23px;height:23px;flex:0 0 23px;margin-left:auto;border:1.5px solid #c9d3de;border-radius:50%;background:#fff;color:#fff;font-size:13px}
+.sb-report-choice-mark.on{background:#ef7137;border-color:#ef7137}
+.sb-home-tools{display:block;margin:3px 0 17px}
+.sb-album-upload,.sb-report-create .sb-new-report{box-sizing:border-box;display:flex;align-items:center;justify-content:flex-start;gap:12px;width:100%;min-height:82px;padding:12px 15px;border:1px solid #f7d6c3;border-radius:17px;background:linear-gradient(110deg,#fff8f3,#fff);text-align:left;box-shadow:0 5px 18px #bb71480d}
+.sb-entry-icon{display:grid;place-items:center;flex:0 0 46px;width:46px;height:46px;border-radius:14px;background:#fff0e5;color:#e66b32;font-size:24px;font-weight:400}
+.sb-album-upload .sb-entry-icon svg{width:22px;height:22px}
+.sb-entry-copy{display:grid;gap:5px;min-width:0;flex:1;color:#26384d}
+.sb-entry-copy strong{font-size:14px;line-height:1.2}
+.sb-entry-copy small{color:#8c98a5;font-size:10px;line-height:1.4;font-weight:400}
+.sb-entry-chevron{color:#d7845a;font-size:24px;font-weight:400}
+.sb-report-create{margin:3px 0 17px}
+/* The message card, including its title, keeps a square footprint. */
+.message-row.me .sb-sent-content .sb-inline-report{box-sizing:border-box;display:flex!important;flex-direction:column;width:205px;height:205px;aspect-ratio:1/1;max-width:100%}
+.message-row.me .sb-sent-content .sb-mini-title{box-sizing:border-box;display:flex!important;align-items:center;flex:0 0 36px;min-height:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.message-row.me .sb-sent-content .sb-mini-cover,.message-row.me .sb-sent-content .sb-mini-cover.has-houses{display:flex!important;flex:1 1 auto;flex-direction:column;height:auto;min-height:0}
+.message-row.me .sb-sent-content .sb-mini-cover-image,.message-row.me .sb-sent-content .sb-mini-cover.has-houses .sb-mini-cover-image{height:auto;flex:1 1 auto;min-height:0}
+.message-row.me .sb-sent-content .sb-mini-cover.has-houses img{height:100%}
+.message-row.me .sb-sent-content .sb-mini-facts{box-sizing:border-box;flex:0 0 53px;height:53px;min-height:0}

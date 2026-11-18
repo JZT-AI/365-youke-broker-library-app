@@ -148,7 +148,8 @@ function sbReportUnavailable(report){return !report||sbReportDirectlyDisabled(re
 function sbReportEnabled(report){return !sbReportUnavailable(report)}
 const sbDemoBanReasons={asset:{5:'图片内容不适合展示',6:'视频内容不适合展示'},report:{4:'报告内容不适合展示'}};
 function sbBanReason(kind,id){
-  const target=kind==='report'?'R'+String(id).padStart(3,'0'):'asset-'+id;
+  const reportRefs={1:'R002',2:'R001',3:'R003'};
+  const target=kind==='report'?(reportRefs[id]||'R'+String(id).padStart(3,'0')):'asset-'+id;
   const records=sbRead('demo-availability-actions',[]);
   const label=kind==='report'?'报告':'素材';
   const latest=records.find(item=>item.kind===label&&item.id===target&&item.action==='禁用');

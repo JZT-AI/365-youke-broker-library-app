@@ -1,5 +1,5 @@
 // Refresh starts a fresh prototype session; navigation within the page retains state.
-try { for(const key of Object.keys(localStorage))if(key.startsWith('smallb-')||key.startsWith('demo-')||key.startsWith('youke-assets-'))localStorage.removeItem(key) } catch {}
+try { if(performance.getEntriesByType('navigation')[0]?.type==='reload')for(const key of Object.keys(localStorage))if(key.startsWith('smallb-')||key.startsWith('demo-')||key.startsWith('youke-assets-'))localStorage.removeItem(key) } catch {}
 const SB={assets:[
  {id:1,name:'客厅实拍',type:'图片',source:'素材库上传'},
  {id:2,name:'户型讲解',type:'视频',source:'会话发送'},

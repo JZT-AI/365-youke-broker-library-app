@@ -65,7 +65,7 @@ const sbSeed = [{
   updatedAt: '11-16 18:20'
 },{
   id: 5,
-  title: '演示：报告含不可用素材',
+  title: '周末看房图文资料',
   advisorName: sbCurrentAdvisorName,
   comps: ['房源', '图片', '视频'],
   selected: {房源: [sbDemoHouses[0].key], 图片: [SB.assets[4].name], 视频: [SB.assets[5].name]},
@@ -128,7 +128,7 @@ try {
   }
 } catch {}
 try {
-  if(localStorage.getItem('smallb-report-examples-v6')!=='1'){
+  if(localStorage.getItem('smallb-report-examples-v7')!=='1'){
     for(const example of sbSeed){
       const index=SB.reports.findIndex(report=>Number(report.id)===example.id);
       if(index<0)SB.reports.push(example);
@@ -145,7 +145,7 @@ try {
       localStorage.removeItem('youke-assets-deleted:asset-'+id);
       ReportPrototype.setDisabled('asset-'+id,true);
     }
-    localStorage.setItem('smallb-report-examples-v6','1');
+    localStorage.setItem('smallb-report-examples-v7','1');
   }
 } catch {}
 function sbAssetDisabled(asset){return !!asset&&ReportPrototype.isDisabled(sbAssetRef(asset))}

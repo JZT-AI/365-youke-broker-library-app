@@ -29,7 +29,7 @@ SB.assets.forEach((a,i)=>{a.time=['11-17 09:42','11-17 09:31','11-17 08:02','11-
 // The browser prototype reads the selected file itself. Native App integrations also read
 // available photo/video metadata from the system media asset and original file.
 SB.assets.forEach((a,i)=>{a.fileMeta=[
- {fileName:'IMG_1024.HEIC',format:'HEIC',size:'3.8 MB',resolution:'3024 × 4032',capturedAt:'2026-11-17 08:56',device:'iPhone 15 Pro',location:'未记录'},
+ {fileName:'IMG_1024.HEIC',format:'HEIC',size:'3.8 MB',resolution:'3024 × 4032',capturedAt:'2026-11-17 08:56',device:'iPhone 15 Pro',location:'32.0462, 118.7781'},
  {fileName:'VID_1023.MOV',format:'MOV',size:'28.4 MB',resolution:'1920 × 1080',duration:'00:18',capturedAt:'2026-11-17 08:29',device:'iPhone 15 Pro',location:'未记录'},
  {fileName:'IMG_1021.JPG',format:'JPEG',size:'2.6 MB',resolution:'4032 × 3024',capturedAt:'2026-11-17 07:46',device:'未记录',location:'未记录'},
  {fileName:'IMG_1018.JPG',format:'JPEG',size:'4.1 MB',resolution:'4032 × 3024',capturedAt:'2026-11-16 16:54',device:'未记录',location:'未记录'}

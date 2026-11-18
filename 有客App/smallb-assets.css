@@ -89,3 +89,9 @@
 .sb-report-unavailable>p{color:#8b97a5}
 .sb-report-unavailable .sb-report-actions button:disabled{color:#bac3cd;cursor:not-allowed}
 .sb-report-unavailable .sb-report-actions button.delete{color:#ab6b67}
+.sb-editor-unavailable{margin:20px 0;padding:32px 22px;border:1px solid #e3e8ee;border-radius:18px;background:#fff;text-align:center;color:#556477}
+.sb-editor-unavailable .sb-unavailable-symbol{width:60px;height:60px;margin:0 auto 16px;border-radius:17px}
+.sb-editor-unavailable h3{margin:0;color:#304056;font-size:18px}
+.sb-editor-unavailable p{margin:10px 0 22px;font-size:12px;line-height:1.7}
+.sb-editor-unavailable button{display:block;width:100%;min-height:42px;margin-top:10px;border:1px solid #f36d31;border-radius:10px;background:#f36d31;color:#fff;font-weight:700}
+.sb-editor-unavailable .sb-editor-delete{border-color:#e0e5ec;background:#fff;color:#a76561}

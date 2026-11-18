@@ -96,6 +96,21 @@ try {
   }
 } catch {}
 try { if(localStorage.getItem('smallb-report-states-demo-v4')!=='1'){if(!SB.reports.some(report=>Number(report.id)===4)){SB.reports.push(sbSeed.find(report=>report.id===4));sbWrite('smallb-reports-demo',SB.reports)}sbWrite('demo-disabled-reports',[...new Set([...sbRead('demo-disabled-reports',[]),'R004'])]);localStorage.setItem('smallb-report-states-demo-v4','1')} } catch {}
+try {
+  if(localStorage.getItem('smallb-report-examples-v5')!=='1'){
+    for(const example of sbSeed){
+      const index=SB.reports.findIndex(report=>Number(report.id)===example.id);
+      if(index<0)SB.reports.push(example);
+      else SB.reports[index]=example;
+    }
+    sbWrite('smallb-reports-demo',SB.reports);
+    sbWrite('demo-disabled-reports',['R004']);
+    for(const id of [1,2,3])localStorage.removeItem('demo-disabled-report-'+id);
+    localStorage.removeItem('youke-assets-deleted:asset-6');
+    ReportPrototype.setDisabled('asset-6',true);
+    localStorage.setItem('smallb-report-examples-v5','1');
+  }
+} catch {}
 function sbAssetDisabled(asset){return !!asset&&ReportPrototype.isDisabled(sbAssetRef(asset))}
 function sbReportDirectlyDisabled(report){const refs={1:'R002',2:'R001',3:'R003'};return !!report&&(sbRead('demo-disabled-reports',[]).includes(refs[report.id]||'R'+String(report.id).padStart(3,'0'))||!!localStorage.getItem('demo-disabled-report-'+report.id))}
 function sbReportHasDisabledAsset(report){return !!report&&['图片','视频'].some(type=>(report.selected?.[type]||[]).some(value=>sbAssetDisabled(SB.assets.find(item=>item.type===type&&item.name===value))))}

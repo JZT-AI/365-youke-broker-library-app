@@ -89,6 +89,15 @@
 .sb-report-unavailable>p{color:#8b97a5}
 .sb-report-unavailable .sb-report-actions button:disabled{color:#bac3cd;cursor:not-allowed}
 .sb-report-unavailable .sb-report-actions button.delete{color:#ab6b67}
+.sb-asset-row{display:flex;align-items:stretch;gap:0;margin:9px 0;border:1px solid #edf0f3;border-radius:14px;background:#fff;overflow:hidden}
+.sb-asset-row .sb-asset{flex:1;min-width:0;width:auto;margin:0;border:0;border-radius:0}
+.sb-asset-row .sb-asset-delete{display:flex;flex:0 0 56px;flex-direction:column;align-items:center;justify-content:center;gap:3px;border:0;border-left:1px solid #edf0f3;background:#fff;color:#8290a1;font-size:10px}
+.sb-asset-row .sb-asset-delete svg{width:17px;height:17px}
+.sb-asset-row .sb-asset-delete:active{background:#fff4f1;color:#c44d43}
+.sb-asset-row .sb-asset-unavailable{background:#f9fafb;color:#8792a0}
+.sb-thumb-unavailable{background:#e9edf2;color:#8d99a8;font-weight:700}
+.sb-asset-unavailable .sb-assetmain strong{color:#5d6a7d}
+.sb-asset-row:has(.sb-asset.selected){border-color:#f5ad88;background:#fffaf6}
 .sb-editor-unavailable{margin:20px 0;padding:32px 22px;border:1px solid #e3e8ee;border-radius:18px;background:#fff;text-align:center;color:#556477}
 .sb-editor-unavailable .sb-unavailable-symbol{width:60px;height:60px;margin:0 auto 16px;border-radius:17px}
 .sb-editor-unavailable h3{margin:0;color:#304056;font-size:18px}

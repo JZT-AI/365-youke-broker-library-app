@@ -7,6 +7,7 @@ SB.assets.forEach((a,i) => { a.name = a.type + ' · ' + ['11月17日 09:42','11�
 SB.assets.push({id:5,name:'图片 · 11月16日 16:06',type:'图片',source:'素材库上传',time:'11-16 16:06',thumb:'thumb-community.jpg'},{id:6,name:'视频 · 11月15日 14:25',type:'视频',source:'素材库上传',time:'11-15 14:25',thumb:'thumb-skyline.jpg'});
 const sbDemoHouses=window.HousingDemo.get().houses;
 const sbDemoVideo = SB.assets.find(asset => asset.type === '视频');
+const sbDemoVideos = SB.assets.filter(asset => asset.type === '视频');
 SB.communityOptions=window.HousingDemo.get().masterCommunities.map(c=>({name:c.name,district:c.district,block:c.block,aliases:c.aliases}));
 const sbModuleTitleDefaults = {房源:'房源推荐',图片:'实景照片',视频:'实拍视频'};
 SB.moduleTitles = {...sbModuleTitleDefaults};
@@ -26,8 +27,31 @@ const sbSeed = [{
   },
   moduleTitles: {...sbModuleTitleDefaults},
   updatedAt: '11-17 10:18'
+},{
+  id: 2,
+  title: '周末看房实景照片',
+  comps: ['房源', '图片', '视频'],
+  selected: {房源: [], 图片: [SB.assets[0].name, SB.assets[4].name], 视频: []},
+  desc: {房源: '', 图片: '整理了看房当天拍摄的室内与周边照片。', 视频: ''},
+  moduleTitles: {...sbModuleTitleDefaults},
+  updatedAt: '11-17 10:06'
+},{
+  id: 3,
+  title: '周末现场讲解视频',
+  comps: ['房源', '图片', '视频'],
+  selected: {房源: [], 图片: [], 视频: sbDemoVideos.map(asset => asset.name)},
+  desc: {房源: '', 图片: '', 视频: '两段现场实拍，方便您先了解空间与周边。'},
+  moduleTitles: {...sbModuleTitleDefaults},
+  updatedAt: '11-17 09:52'
 }];
 SB.reports = sbRead('smallb-reports-demo', sbSeed);
+try {
+  if (localStorage.getItem('smallb-cover-examples-seeded') !== '1') {
+    for (const example of sbSeed) if (!SB.reports.some(report => Number(report.id) === example.id)) SB.reports.push(example);
+    sbWrite('smallb-reports-demo', SB.reports);
+    localStorage.setItem('smallb-cover-examples-seeded', '1');
+  }
+} catch {}
 SB.editId = null; SB.pickSelected = new Set(); SB.reportDirty = false;
 SB.disclaimerChecked = true; SB.helpHtml = '<p>常用的房源照片、讲解视频，可以先放进「我的素材」。上传后，组报告时随时能用。</p><p>在「我的报告」整理好客户关心的内容；和客户聊天时，从「发送资料」挑素材或报告发给他。</p>';
 SB.noticeHtml = '<p>请确认上传内容真实、合法且具有使用权。请勿上传侵权或违法内容。</p>';
@@ -201,22 +225,24 @@ function sbReportCardCover(report){
     const first=(selected[type]||[]).find(value=>{
       if(type==='房源')return true;
       const asset=SB.assets.find(item=>item.type===type&&item.name===value);
-      return asset&&!ReportPrototype.isUnavailable(sbAssetRef(asset));
+      return asset&&!ReportPrototype.isDisabled(sbAssetRef(asset));
     });
     if(first){image=sbItemInfo(type,first).thumb;break}
   }
   const houses=(selected.房源||[]).map(value=>window.HousingDemo.get().houses.find(item=>item.key===value||item.title===value)).filter(Boolean);
+  const mediaCounts=['图片','视频'].map(type=>(selected[type]||[]).filter(value=>{const asset=SB.assets.find(item=>item.type===type&&item.name===value);return asset&&!ReportPrototype.isDisabled(sbAssetRef(asset))}).length);
+  const mediaLabels=[mediaCounts[0]?mediaCounts[0]+'张图片':'',mediaCounts[1]?mediaCounts[1]+'个视频':''].filter(Boolean);
   const format=value=>new Intl.NumberFormat('zh-CN',{maximumFractionDigits:2}).format(value);
   const range=(values,unit)=>{const nums=values.map(Number).filter(value=>Number.isFinite(value)&&value>0).sort((a,b)=>a-b);return nums.length?(nums[0]===nums.at(-1)?format(nums[0]):format(nums[0])+'–'+format(nums.at(-1)))+unit:''};
   const parts=(selected.房源||[]).length?[(selected.房源||[]).length+'套',range(houses.map(house=>house.area),'㎡'),[...new Set(houses.map(house=>Number(house.room)).filter(Boolean))].sort((a,b)=>a-b).map(room=>room+'室').join(' / ')].filter(Boolean):[];
-  return {image,hasHouses:!!selected.房源?.length,summary:parts.join(' · '),price:range(houses.map(house=>house.price),'万')};
+  return {image,hasHouses:!!selected.房源?.length,summary:parts.join(' · '),price:range(houses.map(house=>house.price),'万'),mediaCount:mediaLabels.length?'共'+mediaLabels.join(' · '):''};
 }
 function sbSentMessageMarkup(message){
   const label=message.kind==='report'?'专属报告':message.asset.type;
   let content='';
   if(message.kind==='report'){
     const cover=sbReportCardCover(message.report);
-    content='<button class="sb-inline-report" data-sb="mini:'+message.id+'"><span class="sb-mini-title">'+sbEsc(message.report.title)+'</span><span class="sb-mini-cover '+(cover.hasHouses?'has-houses':'')+'"><img src="'+sbEsc(cover.image)+'" alt="资料封面">'+(cover.hasHouses?'<span class="sb-mini-facts"><span>'+sbEsc(cover.summary)+'</span>'+(cover.price?'<strong>'+sbEsc(cover.price)+'</strong>':'')+'</span>':'')+'</span></button>';
+    content='<button class="sb-inline-report" data-sb="mini:'+message.id+'"><span class="sb-mini-title">'+sbEsc(message.report.title)+'</span><span class="sb-mini-cover '+(cover.hasHouses?'has-houses':'')+'"><span class="sb-mini-cover-image"><img src="'+sbEsc(cover.image)+'" alt="资料封面">'+(cover.mediaCount?'<span class="sb-mini-media-count">'+sbEsc(cover.mediaCount)+'</span>':'')+'</span>'+(cover.hasHouses?'<span class="sb-mini-facts"><span>'+sbEsc(cover.summary)+'</span>'+(cover.price?'<strong>'+sbEsc(cover.price)+'</strong>':'')+'</span>':'')+'</span></button>';
   }else{
     const asset=message.asset;
     const thumb=sbEsc(asset.thumb||'');

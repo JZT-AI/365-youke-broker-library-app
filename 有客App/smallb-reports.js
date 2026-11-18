@@ -266,12 +266,12 @@ function sbReportCardCover(report){
     const first=(selected[type]||[]).find(value=>{
       if(type==='房源')return true;
       const asset=SB.assets.find(item=>item.type===type&&item.name===value);
-      return asset&&!ReportPrototype.isDisabled(sbAssetRef(asset));
+      return asset&&!sbAssetDisabled(asset);
     });
     if(first){image=sbItemInfo(type,first).thumb;break}
   }
   const houses=(selected.房源||[]).map(value=>window.HousingDemo.get().houses.find(item=>item.key===value||item.title===value)).filter(Boolean);
-  const mediaCounts=['图片','视频'].map(type=>(selected[type]||[]).filter(value=>{const asset=SB.assets.find(item=>item.type===type&&item.name===value);return asset&&!ReportPrototype.isDisabled(sbAssetRef(asset))}).length);
+  const mediaCounts=['图片','视频'].map(type=>(selected[type]||[]).filter(value=>{const asset=SB.assets.find(item=>item.type===type&&item.name===value);return asset&&!sbAssetDisabled(asset)}).length);
   const mediaLabels=[mediaCounts[0]?mediaCounts[0]+'张图片':'',mediaCounts[1]?mediaCounts[1]+'个视频':''].filter(Boolean);
   const format=value=>new Intl.NumberFormat('zh-CN',{maximumFractionDigits:2}).format(value);
   const range=(values,unit)=>{const nums=values.map(Number).filter(value=>Number.isFinite(value)&&value>0).sort((a,b)=>a-b);return nums.length?(nums[0]===nums.at(-1)?format(nums[0]):format(nums[0])+'–'+format(nums.at(-1)))+unit:''};

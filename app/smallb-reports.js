@@ -272,7 +272,7 @@ function sbReportPreviewUrl(report) {
           unitPrice: house.unitPrice,
           decoration: house.decoration || ReportPrototype.houseExamples[house.sourceId]?.decoration,
           floorLabel: house.floorLabel || ReportPrototype.houseExamples[house.sourceId]?.floorLabel,
-          features: house.features || ReportPrototype.houseExamples[house.sourceId]?.features,
+          features: Array.isArray(house.features)&&house.features.length?house.features:ReportPrototype.houseExamples[house.sourceId]?.features,
           district: house.district,
           block: house.block,
           source: house.source,

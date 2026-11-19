@@ -331,7 +331,7 @@ function sbSendReports(ids) {
   for(const report of selected){
     const snapshot=sbCurrentReportSnapshot(report);
     SB.sentReport=snapshot;
-    sbPushChatMessage({kind:'report',report:snapshot});
+    sbPushChatMessage({kind:'report',report:snapshot,cover:sbReportCardCover(snapshot)});
   }
   SB.chatReportPick.clear();
   closeSheet();

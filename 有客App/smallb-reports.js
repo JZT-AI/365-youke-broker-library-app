@@ -5,6 +5,8 @@ const sbWrite = (key, value) => { try { localStorage.setItem(key, JSON.stringify
 function sbAutoName(type) { const d = new Date(); return type + ' · ' + [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('') + ' ' + [d.getHours(),d.getMinutes(),d.getSeconds()].map(x=>String(x).padStart(2,'0')).join(':') + ' · ' + String(d.getMilliseconds()).padStart(3,'0') }
 SB.assets.forEach((a,i) => { a.name = a.type + ' · ' + ['11月17日 09:42','11月17日 09:31','11月17日 08:02','11月16日 17:20'][i] });
 SB.assets.push({id:5,name:'图片 · 11月16日 16:06',type:'图片',source:'素材库上传',time:'11-16 16:06',thumb:'thumb-community.jpg'},{id:6,name:'视频 · 11月15日 14:25',type:'视频',source:'素材库上传',time:'11-15 14:25',thumb:'thumb-skyline.jpg'});
+const sbHousingSeed=window.HousingDemo.get();
+if(sbHousingSeed.houses[3]?.status==='上架'){sbHousingSeed.houses[3].status='下架';window.HousingDemo.save(sbHousingSeed)}
 const sbDemoHouses=window.HousingDemo.get().houses;
 const sbCurrentAdvisorName='林悦';
 const sbDemoVideo = SB.assets.find(asset => asset.type === '视频');
@@ -65,8 +67,18 @@ const sbSeed = [{
   desc: {房源: '', 图片: '', 视频: ''},
   moduleTitles: {...sbModuleTitleDefaults},
   updatedAt: '11-16 17:30'
+},{
+  id: 6,
+  title: '城东看房备选',
+  advisorName: sbCurrentAdvisorName,
+  comps: ['房源', '图片', '视频'],
+  selected: {房源: [sbDemoHouses[3].key], 图片: [], 视频: []},
+  desc: {房源: '', 图片: '', 视频: ''},
+  moduleTitles: {...sbModuleTitleDefaults},
+  updatedAt: '11-16 16:40'
 }];
 SB.reports = sbRead('smallb-reports-demo', sbSeed);
+try { if(localStorage.getItem('smallb-delisted-house-example-v1')!=='1'){if(!SB.reports.some(report=>Number(report.id)===6))SB.reports.push(sbSeed.find(report=>report.id===6));sbWrite('smallb-reports-demo',SB.reports);localStorage.setItem('smallb-delisted-house-example-v1','1')} } catch {}
 try { if(localStorage.getItem('smallb-cover-examples-v3')!=='1'){for(const example of sbSeed)if(!SB.reports.some(report=>Number(report.id)===example.id))SB.reports.push(example);sbWrite('smallb-reports-demo',SB.reports);localStorage.setItem('smallb-cover-examples-v3','1')} } catch {}
 try {
   if (localStorage.getItem('smallb-cover-examples-seeded') !== '1') {
@@ -144,7 +156,8 @@ try {
 function sbAssetDisabled(asset){return !!asset&&ReportPrototype.isDisabled(sbAssetRef(asset))}
 function sbReportDirectlyDisabled(report){const refs={1:'R002',2:'R001',3:'R003'};return !!report&&(sbRead('demo-disabled-reports',[]).includes(refs[report.id]||'R'+String(report.id).padStart(3,'0'))||!!localStorage.getItem('demo-disabled-report-'+report.id))}
 function sbReportHasDisabledAsset(report){return !!report&&['图片','视频'].some(type=>(report.selected?.[type]||[]).some(value=>sbAssetDisabled(SB.assets.find(item=>item.type===type&&item.name===value))))}
-function sbReportUnavailable(report){return !report||sbReportDirectlyDisabled(report)||sbReportHasDisabledAsset(report)}
+function sbReportHasDelistedHouse(report){const houses=window.HousingDemo.get().houses;return !!report&&(report.selected?.房源||[]).some(value=>['下架','疑似下架'].includes(houses.find(item=>item.key===value||item.title===value)?.status))}
+function sbReportUnavailable(report){return !report||sbReportDirectlyDisabled(report)||sbReportHasDisabledAsset(report)||sbReportHasDelistedHouse(report)}
 function sbReportEnabled(report){return !sbReportUnavailable(report)}
 const sbDemoBanReasons={asset:{5:'图片内容不适合展示',6:'视频内容不适合展示'},report:{4:'报告内容不适合展示'}};
 function sbBanReason(kind,id){
@@ -166,9 +179,9 @@ function sbReportTile(report,send=false) {
   const selecting=!send&&SB.selectionMode==='reports';
   const on=send?SB.chatReportPick.has(report.id):SB.batchReports?.has(String(report.id));
   if(sbReportDirectlyDisabled(report))return '<article class="sb-report-tile sb-report-unavailable" data-report-id="'+report.id+'"><div class="sb-report-tile-top">'+(selecting?'<button class="sb-report-select '+(on?'on':'')+'" data-rpt="toggleBatchReport:'+report.id+'" aria-label="选择不可用报告" aria-pressed="'+!!on+'">'+(on?'✓':'')+'</button>':'')+'<button class="sb-unavailable-report-top" data-rpt="unavailable:report:'+report.id+'"><span class="sb-report-icon sb-report-icon-unavailable">!</span><span class="sb-report-tile-copy"><strong>报告暂不可用</strong><small>'+sbEsc(report.updatedAt)+' 更新</small></span><em>›</em></button></div><p title="'+sbEsc(sbBanReason('report',report.id))+'">'+sbEsc(sbBanReason('report',report.id))+'</p>'+(send||selecting?'':'<div class="sb-report-actions"><button disabled>'+sbReportActionIcon('preview')+'预览</button><button disabled>'+sbReportActionIcon('edit')+'编辑</button><button class="delete" data-rpt="delete:'+report.id+'">'+sbReportActionIcon('delete')+'删除</button></div>')+'</article>';
-  const summary=sbReportSummary(report),affected=sbReportHasDisabledAsset(report);
-  const content='<div class="sb-report-tile-top">'+(selecting?'<button class="sb-report-select '+(on?'on':'')+'" data-rpt="toggleBatchReport:'+report.id+'" aria-label="选择'+sbEsc(report.title)+'" aria-pressed="'+!!on+'">'+(on?'✓':'')+'</button>':'')+'<span class="sb-report-icon">'+sbReportCoverIcon+'</span><div class="sb-report-tile-copy"><strong>'+sbEsc(report.title)+'</strong><small>'+sbEsc(report.updatedAt)+' 更新</small></div>'+(send&&!affected?'<span class="sb-report-choice-mark '+(on?'on':'')+'" aria-hidden="true">'+(on?'✓':'')+'</span>':'')+'</div><p>'+sbEsc(summary)+'</p>'+(affected?'<p class="sb-report-affected-note">部分素材暂不可用，请编辑替换后发送</p>':'');
-  if(send&&affected)return '<article class="sb-report-tile sb-report-affected" data-report-id="'+report.id+'">'+content+'</article>';
+  const summary=sbReportSummary(report),affected=sbReportHasDisabledAsset(report),delisted=sbReportHasDelistedHouse(report),blocked=affected||delisted;
+  const content='<div class="sb-report-tile-top">'+(selecting?'<button class="sb-report-select '+(on?'on':'')+'" data-rpt="toggleBatchReport:'+report.id+'" aria-label="选择'+sbEsc(report.title)+'" aria-pressed="'+!!on+'">'+(on?'✓':'')+'</button>':'')+'<span class="sb-report-icon">'+sbReportCoverIcon+'</span><div class="sb-report-tile-copy"><strong>'+sbEsc(report.title)+'</strong><small>'+sbEsc(report.updatedAt)+' 更新</small></div>'+(send&&!blocked?'<span class="sb-report-choice-mark '+(on?'on':'')+'" aria-hidden="true">'+(on?'✓':'')+'</span>':'')+'</div><p>'+sbEsc(summary)+'</p>'+(affected?'<p class="sb-report-affected-note">部分素材暂不可用，请编辑替换后发送</p>':'')+(delisted?'<p class="sb-report-affected-note">含失效房源，请编辑替换后发送</p>':'');
+  if(send&&blocked)return '<article class="sb-report-tile sb-report-affected" data-report-id="'+report.id+'">'+content+'</article>';
   return '<article class="sb-report-tile '+(send?'send ':'')+(on?'selected':'')+'" data-report-id="'+report.id+'"'+(send&&SB.chatReportQuery&&!report.title.toLowerCase().includes(SB.chatReportQuery.toLowerCase())?' hidden':'')+'>'+(send?'<button class="sb-report-card-select" data-rpt="chooseChatReport:'+report.id+'" aria-label="选择报告 '+sbEsc(report.title)+'" aria-pressed="'+!!on+'">'+content+'</button>':content+(selecting?'':'<div class="sb-report-actions"><button data-rpt="preview:'+report.id+'">'+sbReportActionIcon('preview')+'预览</button><button class="edit" data-rpt="edit:'+report.id+'">'+sbReportActionIcon('edit')+'编辑</button><button class="delete" data-rpt="delete:'+report.id+'" aria-label="删除'+sbEsc(report.title)+'">'+sbReportActionIcon('delete')+'删除</button></div>'))+'</article>';
 }
 
@@ -260,6 +273,7 @@ function sbReportPreviewUrl(report) {
           district: house.district,
           block: house.block,
           source: house.source,
+          status: house.status,
           community: housing.communityDisplayName(house)
         };
       }
@@ -325,7 +339,7 @@ function sbSendReports(ids) {
     go('sbChatReports',false);
     const disabledReport=selected.find(report=>report&&sbReportDirectlyDisabled(report));
     if(disabledReport)sbOpenUnavailable('report',disabledReport.id);
-    else showToast('部分素材暂不可用，请编辑替换后发送');
+    else showToast('报告含暂不可用素材或失效房源，请编辑后发送');
     return;
   }
   for(const report of selected){
@@ -404,7 +418,7 @@ if(action==='unavailable')sbOpenUnavailable(bits[0],bits[1]);
 if(action==='deleteAsset'){const asset=SB.assets.find(x=>x.id===Number(value));if(asset&&confirm('确定删除这条素材？删除后无法再选用，历史已发送报告不受影响。')){ReportPrototype.setDeleted(sbAssetRef(asset));SB.libraryTab='assets';go('sbLibrary',false);showToast('素材已删除')}}
 if(action==='save'){SB.title=(document.getElementById('sb-title')?.value||'').trim();const err=document.getElementById('sb-error');if(!SB.title){err.textContent='请输入报告标题';return}if(SB.comps.some(c=>!SB.moduleTitles[c]?.trim())){err.textContent='请填写模块标题';return}if(SB.comps.some(c=>Array.from(SB.moduleTitles[c]||'').length>10)){err.textContent='模块标题最多10字';return}if(SB.comps.some(c=>Array.from(SB.desc[c]||'').length>200)){err.textContent='文字描述最多200字';return}if(SB.comps.some(c=>(SB.selected[c]||[]).length>20)){err.textContent='每类最多选20条素材';return}if(!SB.disclaimerChecked){err.textContent='请阅读并同意素材免责须知';return}if(!SB.comps.some(c=>SB.selected[c].length||SB.desc[c])){err.textContent='请至少添加一项素材或模块描述';return}if(SB.editId&&sbReportDirectlyDisabled(SB.reports.find(r=>r.id===SB.editId))){sbRender();sbOpenUnavailable('report',SB.editId);return}if(['图片','视频'].some(type=>(SB.selected[type]||[]).some(name=>sbAssetDisabled(SB.assets.find(asset=>asset.type===type&&asset.name===name))))){err.textContent='请先移除或替换暂不可用的素材';return}sbSaveReport();if(SB.newFromChat){SB.newFromChat=false;SB.chatReportPick.add(SB.editId);SB.chatReportQuery='';if(historyStack.at(-1)==='sbChatReports')historyStack.pop();go('sbChatReports',false)}else {SB.libraryTab='reports';go('sbLibrary')}}
 if(action==='startBatch'){SB.selectionMode=SB.libraryTab;SB.batchAssets.clear();SB.batchReports.clear();go('sbLibrary',false)}if(action==='cancelBatch'){SB.selectionMode='';SB.batchAssets.clear();SB.batchReports.clear();go('sbLibrary',false)}if(action==='toggleBatchAsset'){const a=SB.assets.find(item=>String(item.id)===value);if(!a)return;SB.batchAssets.has(value)?SB.batchAssets.delete(value):SB.batchAssets.add(value);go('sbLibrary',false)}if(action==='toggleBatchReport'){SB.batchReports.has(value)?SB.batchReports.delete(value):SB.batchReports.add(value);go('sbLibrary',false)}if(action==='batchDelete')sbDeleteSelected();if(action==='libraryTab'){SB.libraryTab=value;SB.selectionMode='';SB.batchAssets.clear();SB.batchReports.clear();go('sbLibrary',false)}if(action==='infoBack')go(SB.infoReturn);if(action==='closeSendSheet')closeSheet();if(action==='chatPicker'){closeSheet();sbOpenSendSheet('choice')}if(action==='chatMaterials'){closeSheet();SB.chatMaterialPick=new Set();SB.chatMaterialFilter='全部';SB.sentAssetIds=[];go('sbChatMaterials')}if(action==='chatReports'){closeSheet();SB.chatReportPick=new Set();SB.chatReportQuery='';go('sbChatReports')};
-if(action==='toggleChatAsset'){const id=Number(value);if(!SB.chatMaterialPick.has(id)&&SB.chatMaterialPick.size>=5){showToast('一次最多发送5条素材');return}SB.chatMaterialPick.has(id)?SB.chatMaterialPick.delete(id):SB.chatMaterialPick.add(id);const y=screenEl.scrollTop;go('sbChatMaterials',false);screenEl.scrollTop=y}if(action==='chatMaterialFilter'){SB.chatMaterialFilter=value;go('sbChatMaterials',false)}if(action==='chooseChatReport'){const report=SB.reports.find(r=>r.id===Number(value));if(!report)return;if(!SB.chatReportPick.has(report.id)&&SB.chatReportPick.size>=5){showToast('一次最多发送5份报告');return}if(sbReportDirectlyDisabled(report)){sbOpenUnavailable('report',report.id);return}if(sbReportHasDisabledAsset(report)){showToast('部分素材暂不可用，请编辑替换后发送');return}SB.chatReportPick.has(report.id)?SB.chatReportPick.delete(report.id):SB.chatReportPick.add(report.id);const y=screenEl.scrollTop;go('sbChatReports',false);screenEl.scrollTop=y}if(action==='confirmChatReport'&&SB.chatReportPick.size)sbSendReports([...SB.chatReportPick]);
+if(action==='toggleChatAsset'){const id=Number(value);if(!SB.chatMaterialPick.has(id)&&SB.chatMaterialPick.size>=5){showToast('一次最多发送5条素材');return}SB.chatMaterialPick.has(id)?SB.chatMaterialPick.delete(id):SB.chatMaterialPick.add(id);const y=screenEl.scrollTop;go('sbChatMaterials',false);screenEl.scrollTop=y}if(action==='chatMaterialFilter'){SB.chatMaterialFilter=value;go('sbChatMaterials',false)}if(action==='chooseChatReport'){const report=SB.reports.find(r=>r.id===Number(value));if(!report)return;if(!SB.chatReportPick.has(report.id)&&SB.chatReportPick.size>=5){showToast('一次最多发送5份报告');return}if(sbReportDirectlyDisabled(report)){sbOpenUnavailable('report',report.id);return}if(sbReportHasDisabledAsset(report)||sbReportHasDelistedHouse(report)){showToast('报告含暂不可用素材或失效房源，请编辑后发送');return}SB.chatReportPick.has(report.id)?SB.chatReportPick.delete(report.id):SB.chatReportPick.add(report.id);const y=screenEl.scrollTop;go('sbChatReports',false);screenEl.scrollTop=y}if(action==='confirmChatReport'&&SB.chatReportPick.size)sbSendReports([...SB.chatReportPick]);
 if (action === 'sendAssets') {
   const available = SB.assets.filter(asset => SB.chatMaterialPick.has(asset.id) && sbAvailableAsset(asset));
   if (available.length !== SB.chatMaterialPick.size) {

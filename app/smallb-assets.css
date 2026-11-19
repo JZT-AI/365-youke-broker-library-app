@@ -102,7 +102,7 @@
 .sb-compact-unavailable .sb-compact-photo{background:#eef0f3}
 .sb-compact-disabled{display:grid;place-items:center;width:100%;height:100%;color:#929caa;font-size:24px;font-weight:700}
 .sb-compact-unavailable strong,.sb-compact-unavailable small{color:#8994a2}
-.sb-report-affected-note{margin:4px 0 10px!important;color:#b87428!important;font-size:10px!important}
+.sb-report-affected-note{margin:4px 0 10px!important;color:#b87428!important;font-size:10px!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .sb-editor-unavailable{margin:20px 0;padding:32px 22px;border:1px solid #e3e8ee;border-radius:18px;background:#fff;text-align:center;color:#556477}
 .sb-editor-unavailable .sb-unavailable-symbol{width:60px;height:60px;margin:0 auto 16px;border-radius:17px}
 .sb-editor-unavailable h3{margin:0;color:#304056;font-size:18px}

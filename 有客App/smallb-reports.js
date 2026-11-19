@@ -366,7 +366,7 @@ function sbSentMessageMarkup(message){
   const label=message.kind==='report'?'专属报告':message.asset.type;
   let content='';
   if(message.kind==='report'){
-    const cover=sbReportCardCover(message.report);
+    const cover=message.cover;
     content='<button class="sb-inline-report" data-sb="mini:'+message.id+'"><span class="sb-mini-title">'+sbEsc(message.report.title)+'</span><span class="sb-mini-cover '+(cover.hasHouses?'has-houses':'')+'"><span class="sb-mini-cover-image"><img src="'+sbEsc(cover.image)+'" alt="资料封面">'+(cover.mediaCount?'<span class="sb-mini-media-count">'+sbEsc(cover.mediaCount)+'</span>':'')+'</span>'+(cover.hasHouses?'<span class="sb-mini-facts"><span>'+sbEsc(cover.summary)+'</span>'+(cover.price?'<strong>'+sbEsc(cover.price)+'</strong>':'')+'</span>':'')+'</span></button>';
   }else{
     const asset=message.asset;

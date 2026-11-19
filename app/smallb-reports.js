@@ -5,7 +5,7 @@ const sbWrite = (key, value) => { try { localStorage.setItem(key, JSON.stringify
 function sbAutoName(type) { const d = new Date(); return type + ' · ' + [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('') + ' ' + [d.getHours(),d.getMinutes(),d.getSeconds()].map(x=>String(x).padStart(2,'0')).join(':') + ' · ' + String(d.getMilliseconds()).padStart(3,'0') }
 SB.assets.forEach((a,i) => { a.name = a.type + ' · ' + ['11月17日 09:42','11月17日 09:31','11月17日 08:02','11月16日 17:20'][i] });
 SB.assets.push({id:5,name:'图片 · 11月16日 16:06',type:'图片',source:'素材库上传',time:'11-16 16:06',thumb:'thumb-community.jpg'},{id:6,name:'视频 · 11月15日 14:25',type:'视频',source:'素材库上传',time:'11-15 14:25',thumb:'thumb-skyline.jpg'});
-SB.assets.push({id:7,name:'视频 · 11月15日 12:20',type:'视频',source:'素材库上传',time:'11-15 12:20',thumb:'thumb-video.jpg'});
+SB.assets.push({id:7,name:'视频 · 11月15日 12:20',type:'视频',source:'素材库上传',time:'11-15 12:20',thumb:'thumb-video.jpg'},{id:8,name:'图片 · 11月15日 11:40',type:'图片',source:'素材库上传',time:'11-15 11:40',thumb:'thumb-skyline.jpg'});
 const sbHousingSeed=window.HousingDemo.get();
 if(sbHousingSeed.houses[3]?.status==='上架'){sbHousingSeed.houses[3].status='下架';window.HousingDemo.save(sbHousingSeed)}
 const sbDemoHouses=window.HousingDemo.get().houses;
@@ -22,11 +22,11 @@ const sbSeed = [{
   comps: ['房源', '图片', '视频'],
   selected: {
     房源: [sbDemoHouses[0].key, sbDemoHouses[1].key, sbDemoHouses[2].key],
-    图片: [SB.assets[0].name, SB.assets[2].name, SB.assets[3].name, SB.assets[4].name],
+    图片: [SB.assets[0].name, SB.assets[2].name, SB.assets[3].name, SB.assets[7].name],
     视频: [SB.assets[1].name, SB.assets[6].name]
   },
   desc: {
-    房源: '按您关注的三房户型，挑了两套不同面积和总价的备选。',
+    房源: '按您关注的三房户型，挑了三套不同面积和总价的备选。',
     图片: '',
     视频: ''
   },
@@ -79,7 +79,7 @@ const sbSeed = [{
   updatedAt: '11-16 16:40'
 }];
 SB.reports = sbRead('smallb-reports-demo', sbSeed);
-try { if(localStorage.getItem('smallb-rich-report-example-v1')!=='1'){const index=SB.reports.findIndex(report=>Number(report.id)===1);if(index>=0)SB.reports[index]=sbSeed[0];sbWrite('smallb-reports-demo',SB.reports);localStorage.setItem('smallb-rich-report-example-v1','1')} } catch {}
+try { if(localStorage.getItem('smallb-rich-report-example-v2')!=='1'){const index=SB.reports.findIndex(report=>Number(report.id)===1);if(index>=0)SB.reports[index]=sbSeed[0];sbWrite('smallb-reports-demo',SB.reports);localStorage.setItem('smallb-rich-report-example-v2','1')} } catch {}
 try { if(localStorage.getItem('smallb-delisted-house-example-v1')!=='1'){if(!SB.reports.some(report=>Number(report.id)===6))SB.reports.push(sbSeed.find(report=>report.id===6));sbWrite('smallb-reports-demo',SB.reports);localStorage.setItem('smallb-delisted-house-example-v1','1')} } catch {}
 try { if(localStorage.getItem('smallb-cover-examples-v3')!=='1'){for(const example of sbSeed)if(!SB.reports.some(report=>Number(report.id)===example.id))SB.reports.push(example);sbWrite('smallb-reports-demo',SB.reports);localStorage.setItem('smallb-cover-examples-v3','1')} } catch {}
 try {

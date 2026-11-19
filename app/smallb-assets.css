@@ -110,3 +110,4 @@
 .sb-editor-unavailable p{margin:10px 0 22px;font-size:12px;line-height:1.7}
 .sb-editor-unavailable button{display:block;width:100%;min-height:42px;margin-top:10px;border:1px solid #f36d31;border-radius:10px;background:#f36d31;color:#fff;font-weight:700}
 .sb-editor-unavailable .sb-editor-delete{border-color:#e0e5ec;background:#fff;color:#a76561}
+.sb-title-limit{display:block;margin:5px 2px 9px;color:#8996a4;font-size:11px;text-align:right}

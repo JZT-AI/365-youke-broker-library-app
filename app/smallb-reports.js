@@ -314,7 +314,10 @@ function sbReportPreviewUrl(report) {
   });
   const disabledAssets=Object.values(details).flat().map(item=>item.assetRef).filter(ref=>ref&&SB.assets.some(asset=>sbAssetRef(asset)===ref&&sbAssetDisabled(asset)));
   if(disabledAssets.length)params.set('disabledAssets',[...new Set(disabledAssets)].join(','));
-  return '../微信淘房小程序/小B资料库-专属报告原型.html?' + params;
+  const reportPage = location.protocol === 'file:'
+    ? '../微信淘房小程序/小B资料库-专属报告原型.html'
+    : 'https://jzt-ai.github.io/365-taofang-exclusive-report/report/';
+  return reportPage + '?' + params;
 }
 function sbCurrentReportSnapshot(report){return structuredClone(report)}
 function sbPreviewReport(id){const report=SB.reports.find(r=>r.id===Number(id));if(!report)return;if(sbReportDirectlyDisabled(report)){sbOpenUnavailable('report',report.id);return}window.open(sbReportPreviewUrl(sbCurrentReportSnapshot(report)),'_blank')}

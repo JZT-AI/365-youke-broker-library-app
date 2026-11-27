@@ -12,7 +12,7 @@ const sbDemoHouses=window.HousingDemo.get().houses;
 const sbCurrentAdvisorName='林悦';
 const sbDemoVideo = SB.assets.find(asset => asset.type === '视频');
 const sbDemoVideos = SB.assets.filter(asset => asset.type === '视频');
-if(sbDemoVideos[1])sbDemoVideos[1].coverFailed=true;
+if(sbDemoVideos[0])sbDemoVideos[0].coverFailed=true;
 SB.communityOptions=window.HousingDemo.get().masterCommunities.map(c=>({name:c.name,district:c.district,block:c.block,aliases:c.aliases}));
 const sbModuleTitleDefaults = {房源:'房源推荐',图片:'实景照片',视频:'实拍视频'};
 SB.moduleTitles = {...sbModuleTitleDefaults};
